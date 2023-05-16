@@ -1,8 +1,8 @@
-import { useState } from 'react'
+import { KeyboardEvent, useState } from 'react'
 
 import '../styles/tasklist.scss'
 
-import { FiTrash, FiCheckSquare } from 'react-icons/fi'
+import { FiEdit3, FiTrash, FiCheckSquare } from 'react-icons/fi'
 
 interface Task {
   id: number;
@@ -13,6 +13,9 @@ interface Task {
 export function TaskList() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [newTaskTitle, setNewTaskTitle] = useState('');
+  const [editTaskInput, setEditTaskInput] = useState(false);
+  const [taskIdToEdit, setTaskIdToEdit] = useState(0);
+  const [updatedTaskTitle, setUpdatedTaskTitle] = useState('');
 
   function handleCreateNewTask() {
     if (newTaskTitle !== '') {
@@ -50,6 +53,32 @@ export function TaskList() {
     setTasks((tasks) => tasks.filter((_, index) => index !== taskIndex));
   }
 
+  function handleShowEditTaskInput(id: number) {
+    if (editTaskInput === false) {
+      setEditTaskInput(true);
+      setTaskIdToEdit(id);
+    } else {
+      setEditTaskInput(false);
+      setTaskIdToEdit(0);
+    }
+  }
+
+  function handleEditTask(event: KeyboardEvent<HTMLInputElement>) {
+    if (event.key === "Enter" && updatedTaskTitle !== "") {
+      const taskIndex = tasks.findIndex((task) => task.id === taskIdToEdit);
+
+      const updateTasks = [...tasks];
+
+      updateTasks[taskIndex].title = updatedTaskTitle;
+
+      setTasks(updateTasks);
+
+      setUpdatedTaskTitle('');
+      setEditTaskInput(false);
+      setTaskIdToEdit(0);
+    }
+  }
+
   return (
     <section className="task-list container">
       <header>
@@ -82,12 +111,22 @@ export function TaskList() {
                   />
                   <span className="checkmark"></span>
                 </label>
-                <p>{task.title}</p>
+
+                {(editTaskInput && (task.id === taskIdToEdit)) && <input type="text" value={(updatedTaskTitle !== '') ? updatedTaskTitle : task.title} onChange={(e) => setUpdatedTaskTitle(e.target.value)} onKeyDown={handleEditTask} autoFocus />}
+
+                {(!editTaskInput || !(task.id === taskIdToEdit)) && <p>{task.title}</p>}
+
               </div>
 
-              <button type="button" data-testid="remove-task-button" onClick={() => handleRemoveTask(task.id)}>
-                <FiTrash size={16} />
-              </button>
+              <div>
+                <button type="button" data-testid="edit-task-button" className="edit-task-button" onClick={() => handleShowEditTaskInput(task.id)}>
+                  <FiEdit3 size={16} />
+                </button>
+
+                <button type="button" data-testid="remove-task-button" className="remove-task-button" onClick={() => handleRemoveTask(task.id)}>
+                  <FiTrash size={16} />
+                </button>
+              </div>
             </li>
           ))}
 

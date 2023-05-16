@@ -98,7 +98,7 @@ section.task-list {
             padding-left: 14px;
             margin-bottom: 18px;
           
-            input {
+            input[type=checkbox] {
               position: absolute;
               opacity: 0;
               cursor: pointer;
@@ -139,19 +139,48 @@ section.task-list {
               }
             }
           }
+
+          input[type="text"] {
+            flex: 1;
+            background: var(--background);
+            border: 0;
+            color: var(--text);
+            padding: 12px 24px;
+            
+            border-radius: 8px;
+            border: 0;
+            
+            &::placeholder {
+              color: var(--text-light)
+            }
+          }
         }
 
         button {
           background: transparent;
           border: 0;
+        }
 
+        .edit-task-button {
+          svg {
+            color: var(--pink);
+          }
+
+          &:hover {
+            svg {
+              filter: brightness(1.5);
+            }
+          }
+        }
+
+        .remove-task-button {
           svg {
             color: var(--red);
           }
 
           &:hover {
             svg {
-              filter: brightness(0.5)
+              filter: brightness(0.5);
             }
           }
         }
